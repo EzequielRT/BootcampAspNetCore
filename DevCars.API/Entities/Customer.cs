@@ -12,12 +12,21 @@ namespace DevCars.API.Entities
             Id = id;
             FullName = fullName;
             Document = document;
-            BirthDate = birthDate;            
+            BirthDate = birthDate;
+
+            Orders = new List<Order>();
         }
 
         public int Id { get; private set; }
         public string FullName { get; private set; }
         public string Document { get; private set; }
         public DateTime BirthDate { get; private set; }
+
+        public List<Order> Orders { get; private set; }
+
+        public void Purchase(Order order)
+        {
+            Orders.Add(order);
+        }
     }
 }
