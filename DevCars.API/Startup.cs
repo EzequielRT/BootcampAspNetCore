@@ -27,7 +27,9 @@ namespace DevCars.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<DevCarsDbContext>();
+            var connectionString = Configuration.GetConnectionString("DevCarsCs");
+
+            services.AddDbContext<DevCarsDbContext>(options => options.u);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
