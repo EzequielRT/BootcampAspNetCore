@@ -20,21 +20,47 @@ namespace DevCars.API.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Car>().HasKey(c => c.Id);
+            modelBuilder.Entity<Car>()
+                .HasKey(c => c.Id);
 
-            modelBuilder.Entity<Car>().ToTable("tb_Car");
+            modelBuilder.Entity<Car>()
+                .ToTable("tb_Car");
 
-            modelBuilder.Entity<Customer>().HasKey(c => c.Id);
+            modelBuilder.Entity<Customer>()
+                .HasKey(c => c.Id);
 
-            modelBuilder.Entity<Customer>().ToTable("tb_Customer");
+            modelBuilder.Entity<Customer>()
+                .ToTable("tb_Customer");
 
-            modelBuilder.Entity<Order>().HasKey(o => o.Id);
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Orders)
+                .WithOne(o => o.Customer)
+                .HasForeignKey(o => o.IdCustomer)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Order>().ToTable("tb_Order");
+            modelBuilder.Entity<Order>()
+                .HasKey(o => o.Id);
 
-            modelBuilder.Entity<ExtraOrderItem>().HasKey(e => e.Id);
+            modelBuilder.Entity<Order>()
+                .ToTable("tb_Order");
 
-            modelBuilder.Entity<ExtraOrderItem>().ToTable("tb_ExtraOrderItem");
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.ExtraItems)
+                .WithOne()
+                .HasForeignKey(e => e.IdOrder)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Car)
+                .WithOne()
+                .HasForeignKey<Order>(o => o.IdCar)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ExtraOrderItem>()
+                .HasKey(e => e.Id);
+
+            modelBuilder.Entity<ExtraOrderItem>()
+                .ToTable("tb_ExtraOrderItem");
         }
     }
 }
