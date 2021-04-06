@@ -1,9 +1,7 @@
 ﻿using DevCars.API.Entities;
+using DevCars.API.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace DevCars.API.Persistence
 {
@@ -20,47 +18,12 @@ namespace DevCars.API.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Car>()
-                .HasKey(c => c.Id);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<Car>()
-                .ToTable("tb_Car");
-
-            modelBuilder.Entity<Customer>()
-                .HasKey(c => c.Id);
-
-            modelBuilder.Entity<Customer>()
-                .ToTable("tb_Customer");
-
-            modelBuilder.Entity<Customer>()
-                .HasMany(c => c.Orders)
-                .WithOne(o => o.Customer)
-                .HasForeignKey(o => o.IdCustomer)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasKey(o => o.Id);
-
-            modelBuilder.Entity<Order>()
-                .ToTable("tb_Order");
-
-            modelBuilder.Entity<Order>()
-                .HasMany(o => o.ExtraItems)
-                .WithOne()
-                .HasForeignKey(e => e.IdOrder)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Car)
-                .WithOne()
-                .HasForeignKey<Order>(o => o.IdCar)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<ExtraOrderItem>()
-                .HasKey(e => e.Id);
-
-            modelBuilder.Entity<ExtraOrderItem>()
-                .ToTable("tb_ExtraOrderItem");
+            //modelBuilder.ApplyConfiguration(new CarDbConfiguration());
+            //modelBuilder.ApplyConfiguration(new CustomerDbConfiguration());
+            //modelBuilder.ApplyConfiguration(new OrderDbConfiguration());
+            //modelBuilder.ApplyConfiguration(new ExtraOrderItemDbConfiguration());
         }
     }
 }

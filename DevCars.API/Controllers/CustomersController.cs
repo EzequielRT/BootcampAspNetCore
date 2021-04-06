@@ -7,6 +7,7 @@ using DevCars.API.InputModels;
 using DevCars.API.Persistence;
 using DevCars.API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevCars.API.Controllers
 {
@@ -27,6 +28,8 @@ namespace DevCars.API.Controllers
 
             _dbContext.Customers.Add(customer);
 
+            _dbContext.SaveChanges();
+
             return NoContent();
         }
 
@@ -40,13 +43,13 @@ namespace DevCars.API.Controllers
 
             var order = new Order(model.IdCar, model.IdCustomer, car.Price, extraItems);
 
-            var customer = _dbContext.Customers.SingleOrDefault(c => c.Id == model.IdCustomer);
+            _dbContext.Orders.Add(order);
 
-            customer.Purchase(order);
+            _dbContext.SaveChanges();
 
             return CreatedAtAction(
                 nameof(GetOrder),
-                new { id = customer.Id, orderid = order.Id },
+                new { id = order.IdCustomer, orderid = order.Id },
                 model
                 );
         }
@@ -55,16 +58,19 @@ namespace DevCars.API.Controllers
         [HttpGet("{id}/orders/{orderid}")]
         public IActionResult GetOrder(int id, int orderid)
         {
-            var customer = _dbContext.Customers.SingleOrDefault(c => c.Id == id);
+            var order = _dbContext.Orders
+                .Include(o => o.Id == orderid)
+                .SingleOrDefault(o => o.Id == orderid);
 
-            if (customer == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            var order = customer.Orders.SingleOrDefault(o => o.Id == orderid);
-
-            var extraItems = order.ExtraItems.Select(e => e.Description).ToList();
+            var extraItems = order
+                .ExtraItems
+                .Select(e => e.Description)
+                .ToList();
 
             var orderViewModel = new OrderDetailsViewModel(order.IdCar, order.IdCustomer, order.TotalCost, extraItems);
 

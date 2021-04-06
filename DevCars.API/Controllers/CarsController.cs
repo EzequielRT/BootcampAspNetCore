@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using DevCars.API.Entities;
 using DevCars.API.InputModels;
 using DevCars.API.Persistence;
@@ -77,6 +74,8 @@ namespace DevCars.API.Controllers
 
             _dbContext.Cars.Add(car);
 
+            _dbContext.SaveChanges();
+
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = car.Id },
@@ -101,6 +100,8 @@ namespace DevCars.API.Controllers
 
             car.Update(model.Color, model.Price);
 
+            _dbContext.SaveChanges();
+
             return NoContent();
         }
 
@@ -119,6 +120,8 @@ namespace DevCars.API.Controllers
             }
 
             car.SetAsSuspended();
+
+            _dbContext.SaveChanges();
 
 
             return NoContent();
